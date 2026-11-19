@@ -7,6 +7,7 @@ const Schedule = {
     return `${y}-${m}-${d}`;
   },
   isScheduled(medicine, date) {
+    if (!medicine || !medicine.createdAt) return false;
     const added = new Date(medicine.createdAt);
     added.setHours(0, 0, 0, 0);
     const target = new Date(date);
@@ -27,7 +28,13 @@ const Schedule = {
     return true;
   },
   forDate(date = new Date()) {
-    return MedicineStore.getAll()
+    // Защита от вызова до инициализации хранилищ
+    if (typeof MedicineStore === "undefined" || typeof HistoryStore === "undefined") return [];
+    
+    const allMeds = MedicineStore.getAll();
+    if (!Array.isArray(allMeds)) return [];
+
+    return allMeds
       .filter(m => this.isScheduled(m, date))
       .map(m => ({ ...m, dateKey: this.dateKey(date), status: HistoryStore.getStatus(m.id, this.dateKey(date)) }))
       .sort((a, b) => a.time.localeCompare(b.time));

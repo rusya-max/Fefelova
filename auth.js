@@ -2,26 +2,6 @@ const AuthStore = {
   key: "medreminder_users",
   sessionKey: "medreminder_current_user",
 
-  updateProfile(data) {
-    const currentUser = this.currentUser();
-    if (!currentUser) return;
-
-    const users = this.getUsers();
-    const index = users.findIndex(u => u.id === currentUser.id);
-    if (index === -1) return;
-
-    
-    if (data.name && data.name.toLowerCase() !== users[index].name.toLowerCase()) {
-      if (users.some(u => u.name.toLowerCase() === data.name.toLowerCase())) {
-        return { error: "Это имя уже занято." };
-      }
-    }
-
-    users[index] = { ...users[index], ...data };
-    this.saveUsers(users);
-    localStorage.setItem(this.sessionKey, JSON.stringify(users[index]));
-    return users[index];
-  },
   getUsers() {
     try { return JSON.parse(localStorage.getItem(this.key) || "[]"); } catch { return []; }
   },
@@ -50,6 +30,25 @@ const AuthStore = {
     this.saveUsers(users);
     localStorage.setItem(this.sessionKey, JSON.stringify(newUser));
     return newUser;
+  },
+  updateProfile(data) {
+    const currentUser = this.currentUser();
+    if (!currentUser) return { error: "Пользователь не авторизован." };
+
+    const users = this.getUsers();
+    const index = users.findIndex(u => u.id === currentUser.id);
+    if (index === -1) return { error: "Аккаунт не найден." };
+
+    if (data.name && data.name.toLowerCase() !== users[index].name.toLowerCase()) {
+      if (users.some(u => u.name.toLowerCase() === data.name.toLowerCase())) {
+        return { error: "Это имя уже занято." };
+      }
+    }
+
+    users[index] = { ...users[index], ...data };
+    this.saveUsers(users);
+    localStorage.setItem(this.sessionKey, JSON.stringify(users[index]));
+    return users[index];
   },
   logout() {
     localStorage.removeItem(this.sessionKey);

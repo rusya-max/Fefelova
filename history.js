@@ -1,10 +1,13 @@
 // Журнал статусов приёма.
 const HistoryStore = {
   get key() {
-    const user = AuthStore.currentUser();
+    const user = (typeof AuthStore !== "undefined") ? AuthStore.currentUser() : null;
     return user ? `medreminder_history_${user.id}` : "medreminder_history_guest";
   },
-  
+  getAll() {
+    try { return JSON.parse(localStorage.getItem(this.key) || "[]"); }
+    catch { return []; }
+  },
   saveAll(items) {
     localStorage.setItem(this.key, JSON.stringify(items));
   },

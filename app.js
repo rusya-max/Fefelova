@@ -1,4 +1,4 @@
-// Главный файл: навигация, формы, отображение экранов и всплывающие напоминания.
+// Главный файл: навигация, формы, отображение экранов и напоминания.
 const App = {
   reminderTimer: null,
   toastTimer: null,
@@ -18,7 +18,6 @@ const App = {
     }
   },
 
-  
   initAuth() {
     const user = AuthStore.currentUser();
     const modal = document.getElementById("authModal");
@@ -30,12 +29,10 @@ const App = {
     if (user) {
       modal.classList.remove("open");
       modal.setAttribute("aria-hidden", "true");
-      
-       this.updateProfileUI(user);
+      this.updateProfileUI(user);
       return;
     }
 
-    
     modal.classList.add("open");
     modal.setAttribute("aria-hidden", "false");
 
@@ -77,10 +74,9 @@ const App = {
       }
     };
   },
-     updateProfileUI(user) {
+
+  updateProfileUI(user) {
     const initial = user.name.charAt(0).toUpperCase();
-    
-    
     const topAvatar = document.getElementById("userAvatar");
     if (topAvatar) {
       if (user.avatar) {
@@ -92,7 +88,6 @@ const App = {
       }
     }
 
-    
     const bigAvatar = document.getElementById("profilePageAvatar");
     if (bigAvatar) {
       if (user.avatar) {
@@ -104,15 +99,15 @@ const App = {
       }
     }
 
-  
     const nameEl = document.getElementById("profilePageName");
     if (nameEl) nameEl.textContent = user.name;
     
     const inputName = document.getElementById("profileInputName");
     if (inputName) inputName.value = user.name;
   },
+
   bindNavigation() {
-        document.getElementById("profileBtn").addEventListener("click", () => this.showPage("profile"));
+    document.getElementById("profileBtn").addEventListener("click", () => this.showPage("profile"));
     document.querySelectorAll(".nav-link").forEach(button => {
       button.addEventListener("click", () => this.showPage(button.dataset.page));
     });
@@ -123,7 +118,7 @@ const App = {
     document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
     document.getElementById(`page-${page}`).classList.add("active");
     document.querySelectorAll(".nav-link").forEach(b => b.classList.toggle("active", b.dataset.page === page));
-        const titles = { dashboard: "Главная", medicines: "Мои лекарства", history: "История приёма", statistics: "Статистика", profile: "Профиль" };
+    const titles = { dashboard: "Главная", medicines: "Мои лекарства", history: "История приёма", statistics: "Статистика", profile: "Профиль" };
     document.getElementById("topbarHeading").textContent = titles[page] || "MedReminder";
     document.getElementById("sidebar").classList.remove("open");
     this.renderAll();
@@ -194,6 +189,7 @@ const App = {
   bindForm() {
     document.getElementById("medicineForm").addEventListener("submit", e => {
       e.preventDefault();
+      
       const id = document.getElementById("medicineId").value;
       const frequency = document.getElementById("medicineFrequency").value;
       const customFrequency = document.getElementById("medicineCustomFrequency").value.trim();
@@ -227,7 +223,7 @@ const App = {
   },
 
   bindActions() {
-  
+    // Сохранение профиля
     document.getElementById("profileForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const newName = document.getElementById("profileInputName").value.trim();
@@ -236,35 +232,36 @@ const App = {
       if (!newName) return this.toast("Имя не может быть пустым.");
       if (newPin && newPin.length !== 4) return this.toast("PIN должен содержать 4 цифры.");
 
-      AuthStore.updateProfile({ name: newName, pin: newPin || undefined });
+      const result = AuthStore.updateProfile({ name: newName, pin: newPin || undefined });
+      if (result && result.error) return this.toast(result.error);
+      
       this.toast("Профиль обновлён.");
       this.updateProfileUI(AuthStore.currentUser());
-      document.getElementById("profileInputPin").value = ""; // Очищаем поле пароля
+      document.getElementById("profileInputPin").value = "";
     });
 
-    
+    // Загрузка аватара
     document.getElementById("avatarInput").addEventListener("change", (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      
       const reader = new FileReader();
       reader.onload = (event) => {
-        const base64 = event.target.result;
-        AuthStore.updateProfile({ avatar: base64 });
+        AuthStore.updateProfile({ avatar: event.target.result });
         this.updateProfileUI(AuthStore.currentUser());
         this.toast("Фото обновлено.");
       };
       reader.readAsDataURL(file);
     });
 
-    
+    // Выход
     document.getElementById("logoutPageBtn").addEventListener("click", () => {
       if (confirm("Выйти из аккаунта?")) {
         AuthStore.logout();
         location.reload();
       }
     });
-    
+
+    // Редактирование и удаление лекарства
     document.getElementById("medicineList").addEventListener("click", e => {
       const edit = e.target.closest("[data-edit]");
       const remove = e.target.closest("[data-delete]");
@@ -279,7 +276,7 @@ const App = {
       }
     });
 
-  
+    // Отметка "Принято" / "Пропустить" в расписании
     document.getElementById("todaySchedule").addEventListener("click", e => {
       const action = e.target.closest("[data-status]");
       if (!action) return;
@@ -290,6 +287,7 @@ const App = {
       this.renderAll();
     });
 
+    // Ближайший приём
     document.getElementById("nextDose").addEventListener("click", e => {
       const btn = e.target.closest("[data-status]");
       if (!btn) return;
@@ -300,7 +298,7 @@ const App = {
       this.renderAll();
     });
 
-    
+    // Очистка истории
     document.getElementById("clearHistory").addEventListener("click", () => {
       if (confirm("Удалить все записи истории?")) {
         HistoryStore.clear();
@@ -309,23 +307,20 @@ const App = {
       }
     });
 
+    // Календарь
     document.getElementById("calPrev").addEventListener("click", () => this.shiftCalendarMonth(-1));
     document.getElementById("calNext").addEventListener("click", () => this.shiftCalendarMonth(1));
 
-    
     document.getElementById("calendarModalContent").addEventListener("click", e => {
       const btn = e.target.closest("[data-status]");
       if (!btn) return;
-      const medId = btn.dataset.medicine;
-      const dateKey = btn.dataset.date;
-      const status = btn.dataset.status;
-      const medicine = MedicineStore.find(medId);
+      const medicine = MedicineStore.find(btn.dataset.medicine);
       if (!medicine) return;
       
-      HistoryStore.setStatus(medicine, dateKey, status);
-      this.toast(status === "taken" ? "Приём отмечен как выполненный." : "Приём отмечен как пропущенный.");
+      HistoryStore.setStatus(medicine, btn.dataset.date, btn.dataset.status);
+      this.toast(btn.dataset.status === "taken" ? "Приём отмечен как выполненный." : "Приём отмечен как пропущенный.");
       this.renderAll();
-      this.openCalendarDay(dateKey); 
+      this.openCalendarDay(btn.dataset.date); 
     });
   },
 
@@ -448,8 +443,7 @@ const App = {
     const writeNotified = map => { try { localStorage.setItem(NOTIFIED_KEY, JSON.stringify(map)); } catch {} };
 
     const check = () => {
-      if (!AuthStore.currentUser()) return; // Не показываем, если не вошли
-      
+      if (!AuthStore.currentUser()) return;
       const now = new Date();
       const today = Schedule.dateKey(now);
       const nowMinutes = now.getHours() * 60 + now.getMinutes();
@@ -460,7 +454,7 @@ const App = {
         if (m.status !== "pending" || !m.time) return;
         const [h, min] = m.time.split(":").map(Number);
         const medMinutes = h * 60 + min;
-        if (Math.abs(nowMinutes - medMinutes) > 1) return; // окно ±1 минута
+        if (Math.abs(nowMinutes - medMinutes) > 1) return;
 
         const key = `${m.id}_${today}_${m.time}`;
         if (notified[key]) return;
@@ -534,7 +528,7 @@ const App = {
     const year = cursor.getFullYear();
     const month = cursor.getMonth();
     const first = new Date(year, month, 1);
-    const startDow = (first.getDay() + 6) % 7; // пн=0
+    const startDow = (first.getDay() + 6) % 7;
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const todayKey = Schedule.dateKey();
     const history = HistoryStore.getAll();
@@ -562,7 +556,6 @@ const App = {
 
     document.getElementById("calGrid").innerHTML = html;
 
-    // Делегирование клика
     document.getElementById("calGrid").onclick = (e) => {
       const dayEl = e.target.closest(".cal-day:not(.other)");
       if (dayEl && dayEl.dataset.date) {

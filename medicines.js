@@ -1,10 +1,12 @@
-// Работа со списком лекарств и локальным хранилищем.
 const MedicineStore = {
   get key() {
-    const user = AuthStore.currentUser();
+    const user = (typeof AuthStore !== "undefined") ? AuthStore.currentUser() : null;
     return user ? `medreminder_medicines_${user.id}` : "medreminder_medicines_guest";
   },
-
+  getAll() {
+    try { return JSON.parse(localStorage.getItem(this.key) || "[]"); }
+    catch { return []; }
+  },
   saveAll(items) {
     localStorage.setItem(this.key, JSON.stringify(items));
   },

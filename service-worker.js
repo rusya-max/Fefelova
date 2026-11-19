@@ -1,4 +1,4 @@
-const CACHE_NAME = "medreminder-v7";
+const CACHE_NAME = "medreminder-v9";
 const APP_FILES = [
   "./",
   "./auth.js",

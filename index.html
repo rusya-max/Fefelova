@@ -32,14 +32,15 @@
     </aside>
 
     <main class="main-content">
-      <header class="topbar">
-</button>
-        <div class="topbar-title"><span class="eyebrow">ВАШЕ ЗДОРОВЬЕ</span><strong id="topbarHeading">Главная</strong></div>        <button class="mobile-menu icon-button" id="mobileMenu" aria-label="Открыть меню">☰
-        <div class="topbar-actions" style="position: relative;">
-          <div class="profile-wrap" id="profileWrap">
+            <header class="topbar">
+        <button class="mobile-menu icon-button" id="mobileMenu" aria-label="Открыть меню">☰</button>
+        <div class="topbar-title"><span class="eyebrow">ВАШЕ ЗДОРОВЬЕ</span><strong id="topbarHeading">Главная</strong></div>
+        
+        <div class="topbar-actions">
           <button class="avatar-btn" id="profileBtn" aria-label="Открыть профиль" style="border:0; background:transparent; padding:0;">
-  <div class="avatar" id="userAvatar" style="width:44px; height:44px; border-radius:50%; background:var(--lavender); color:var(--lavender-dark); display:grid; place-items:center; font-weight:800; font-size:16px;">M</div>
-</button>
+            <div class="avatar" id="userAvatar">M</div>
+          </button>
+        </div>
       </header>
 
       <section class="page active" id="page-dashboard">
@@ -201,7 +202,8 @@
         </label>
         <label id="customFrequencyWrap" style="display:none;">Свой вариант<input id="medicineCustomFrequency" type="text" placeholder="Каждые 8 часов" maxlength="60"></label>
         <p class="form-hint">Указывайте дозировку в соответствии с назначением врача.</p>
-        <div class="modal-actions"><button type="button" class="secondary-button" id="cancelModal">Отмена</button><button type="submit" class="primary-button">Сохранить</button></div>
+        <div class="modal-actions"><button type="button" class="secondary-button" id="cancelModal">Отмена</button>
+          <button type="submit" class="primary-button">Сохранить</button></div>
       </form>
     </div>
   </div>
