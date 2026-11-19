@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#fbf9f6">
+  <meta name="description" content="MedReminder — приложение для организации расписания приёма лекарств.">
+  <title>MedReminder — напоминания о лекарствах</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">✚</div>
+        <div><strong>MedReminder</strong><span>Забота каждый день</span></div>
+      </div>
+      <nav class="nav-menu" aria-label="Основная навигация">
+        <button class="nav-link active" data-page="dashboard"><span>⌂</span> Главная</button>
+        <button class="nav-link" data-page="medicines"><span>💊</span> Лекарства</button>
+        <button class="nav-link" data-page="history"><span>📅</span> История</button>
+        <button class="nav-link" data-page="statistics"><span>📊</span> Статистика</button>
+        <button class="nav-link" data-page="profile"><span>👤</span> Профиль</button>
+      </nav>
+      <div class="sidebar-note">
+        <div class="note-icon">🌿</div>
+        <strong>Будьте здоровы!</strong>
+        <p>Регулярный приём помогает быстрее восстановиться.</p>
+      </div>
+      <div class="sidebar-footer">v1.0 · MedReminder</div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+</button>
+        <div class="topbar-title"><span class="eyebrow">ВАШЕ ЗДОРОВЬЕ</span><strong id="topbarHeading">Главная</strong></div>        <button class="mobile-menu icon-button" id="mobileMenu" aria-label="Открыть меню">☰
+        <div class="topbar-actions" style="position: relative;">
+          <div class="profile-wrap" id="profileWrap">
+          <button class="avatar-btn" id="profileBtn" aria-label="Открыть профиль" style="border:0; background:transparent; padding:0;">
+  <div class="avatar" id="userAvatar" style="width:44px; height:44px; border-radius:50%; background:var(--lavender); color:var(--lavender-dark); display:grid; place-items:center; font-weight:800; font-size:16px;">M</div>
+</button>
+      </header>
+
+      <section class="page active" id="page-dashboard">
+        <div class="welcome-row">
+          <div><span class="eyebrow" id="todayDate"></span><h1>Доброе утро!</h1><p class="muted">Следите за расписанием и отмечайте приёмы.</p></div>
+          <button class="primary-button" id="quickAdd">＋ Добавить лекарство</button>
+        </div>
+
+        <div class="summary-grid">
+          <article class="summary-card blue-card"><div class="summary-icon">📋</div><span>Приёмов сегодня</span><strong id="todayTotal">0</strong><small>По расписанию</small></article>
+          <article class="summary-card green-card"><div class="summary-icon">✓</div><span>Принято</span><strong id="todayTaken">0</strong><small>Отмечено</small></article>
+          <article class="summary-card orange-card"><div class="summary-icon">⏳</div><span>Ожидает</span><strong id="todayPending">0</strong><small>Ещё не отмечено</small></article>
+        </div>
+
+        <div class="content-grid">
+          <section class="panel schedule-panel">
+            <div class="panel-heading"><div><h2>Расписание на сегодня</h2><p class="muted">Ваш план приёма</p></div><span class="date-pill" id="todayPill"></span></div>
+            <div id="todaySchedule" class="schedule-list"></div>
+          </section>
+          <section class="panel next-panel">
+            <div class="panel-heading"><div><h2>Ближайший приём</h2><p class="muted" style="color:var(--mint-dark);opacity:.8;">Следующее событие</p></div></div>
+            <div id="nextDose" class="next-dose">
+              <div class="empty-icon">◷</div><strong>Пока нет приёмов</strong><p class="muted">Добавьте лекарство.</p>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="page" id="page-medicines">
+        <div class="page-heading"><div><span class="eyebrow">СПИСОК</span><h1>Мои лекарства</h1><p class="muted">Добавляйте и редактируйте расписание.</p></div><button class="primary-button" id="addMedicine">＋ Добавить</button></div>
+        <div id="medicineList" class="medicine-grid"></div>
+      </section>
+
+      <section class="page" id="page-history">
+        <div class="page-heading"><div><span class="eyebrow">ЖУРНАЛ</span><h1>История приёма</h1><p class="muted">Записи о приёмах.</p></div></div>
+        <div class="panel history-calendar" id="historyCalendar">
+          <div class="cal-header">
+            <div class="cal-title" id="calTitle">Календарь</div>
+            <div class="cal-nav">
+              <button type="button" id="calPrev" aria-label="Предыдущий месяц">‹</button>
+              <button type="button" id="calNext" aria-label="Следующий месяц">›</button>
+            </div>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+          <div class="cal-legend">
+            <span><i class="cal-dot taken"></i> Принято</span>
+            <span><i class="cal-dot skipped"></i> Пропущено</span>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-heading"><h2>Последние записи</h2><button class="text-button" id="clearHistory">Очистить</button></div>
+          <div id="historyList" class="history-list"></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-statistics">
+        <div class="page-heading"><div><span class="eyebrow">ПРОГРЕСС</span><h1>Статистика</h1><p class="muted">Сводка за 7 дней.</p></div></div>
+        <div class="summary-grid stats-summary">
+          <article class="summary-card blue-card"><div class="summary-icon">📋</div><span>Всего приёмов</span><strong id="weekTotal">0</strong><small>За 7 дней</small></article>
+          <article class="summary-card green-card"><div class="summary-icon">✓</div><span>Принято</span><strong id="weekTaken">0</strong><small>Отмечено</small></article>
+          <article class="summary-card orange-card"><div class="summary-icon">％</div><span>Выполнение</span><strong id="weekRate">0%</strong><small>Доля</small></article>
+        </div>
+        <section class="panel chart-panel"><div class="panel-heading"><div><h2>Активность за неделю</h2></div></div><div id="weeklyChart" class="weekly-chart"></div><div class="chart-legend"><span><i class="legend-dot taken-dot"></i> Принято</span><span><i class="legend-dot missed-dot"></i> Пропущено</span></div></section>
+      </section>
+           
+      <section class="page" id="page-profile">
+        <div class="page-heading">
+          <div><span class="eyebrow">АККАУНТ</span><h1>Мой профиль</h1><p class="muted">Управление личными данными.</p></div>
+        </div>
+
+        <div class="profile-page-grid">
+         
+          <div class="panel profile-card">
+            <div class="profile-avatar-container">
+              <div class="profile-avatar-big" id="profilePageAvatar">M</div>
+              <label class="profile-avatar-upload">
+                <input type="file" id="avatarInput" accept="image/*" hidden>
+                <span>📷 Изменить фото</span>
+              </label>
+            </div>
+            <h2 id="profilePageName">Имя</h2>
+            <p class="muted">Аккаунт MedReminder</p>
+            <button class="secondary-button" id="logoutPageBtn" style="color:var(--red-dark); border:1px solid var(--red-soft); background:transparent; margin-top:20px;">⎋ Выйти</button>
+          </div>
+
+          
+          <div class="panel profile-settings">
+            <div class="panel-heading"><h2>Настройки</h2></div>
+            <form id="profileForm">
+              <label>Имя
+                <input type="text" id="profileInputName" maxlength="30" required>
+              </label>
+              <label>Новый PIN-код (оставьте пустым, если не меняете)
+                <input type="password" id="profileInputPin" inputmode="numeric" pattern="\d{4}" placeholder="••••" maxlength="4">
+              </label>
+              <div class="modal-actions" style="justify-content:flex-start; margin-top:20px;">
+                <button type="submit" class="primary-button">Сохранить изменения</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <footer class="app-footer">MedReminder — учебный проект. Не заменяет рекомендации врача.</footer>
+    </main>
+  </div>
+
+ 
+  <div class="modal-backdrop open" id="authModal" aria-hidden="false">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <div class="modal-header">
+        <div><span class="eyebrow">ДОБРО ПОЖАЛОВАТЬ</span><h2 id="authTitle">Вход в MedReminder</h2></div>
+      </div>
+      <form id="authForm">
+        <label>Ваше имя
+          <input id="authName" type="text" placeholder="Например, Анна" maxlength="30" required>
+        </label>
+        <label>PIN-код (4 цифры)
+          <input id="authPin" type="password" inputmode="numeric" pattern="\d{4}" placeholder="••••" maxlength="4" required>
+        </label>
+        <p class="form-hint" id="authError" style="color:var(--red-dark); display:none;"></p>
+        <div class="modal-actions" style="justify-content:space-between;">
+          <button type="button" class="secondary-button" id="authRegisterBtn">Создать аккаунт</button>
+          <button type="submit" class="primary-button">Войти</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <div class="modal-backdrop" id="medicineModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header"><div><span class="eyebrow">СПИСОК</span><h2 id="modalTitle">Добавить лекарство</h2></div><button class="icon-button" id="closeModal" aria-label="Закрыть">×</button></div>
+      <form id="medicineForm">
+        <input type="hidden" id="medicineId">
+        <label>Название<input id="medicineName" type="text" placeholder="Например, Витамин D" maxlength="60" required></label>
+        <div class="form-row">
+          <label>Форма
+            <select id="medicineFormType">
+              <option value="Таблетка">Таблетка</option>
+              <option value="Капсула">Капсула</option>
+              <option value="Сироп">Сироп</option>
+              <option value="Капли">Капли</option>
+              <option value="Другое">Другое</option>
+            </select>
+          </label>
+          <label>Дозировка<input id="medicineDose" type="text" placeholder="1 таблетка" maxlength="40" required></label>
+        </div>
+        <label id="customFormWrap" style="display:none;">Своя форма<input id="medicineCustomForm" type="text" placeholder="Пластырь / Спрей" maxlength="40"></label>
+        <label>Время приёма<input id="medicineTime" type="time" value="09:00" required></label>
+        <label>Периодичность
+          <select id="medicineFrequency">
+            <option value="daily">Каждый день</option>
+            <option value="weekdays">По будням</option>
+            <option value="weekends">По выходным</option>
+            <option value="alternate">Через день</option>
+            <option value="custom">Свой вариант…</option>
+          </select>
+        </label>
+        <label id="customFrequencyWrap" style="display:none;">Свой вариант<input id="medicineCustomFrequency" type="text" placeholder="Каждые 8 часов" maxlength="60"></label>
+        <p class="form-hint">Указывайте дозировку в соответствии с назначением врача.</p>
+        <div class="modal-actions"><button type="button" class="secondary-button" id="cancelModal">Отмена</button><button type="submit" class="primary-button">Сохранить</button></div>
+      </form>
+    </div>
+  </div>
+
+
+  <div class="modal-backdrop" id="calendarModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="calendarModalTitle">
+      <div class="modal-header">
+        <div><span class="eyebrow">КАЛЕНДАРЬ</span><h2 id="calendarModalTitle">Выберите дату</h2></div>
+        <button class="icon-button" id="closeCalendarModal" aria-label="Закрыть">×</button>
+      </div>
+      <div id="calendarModalContent" style="display:flex;flex-direction:column;gap:12px;"></div>
+    </div>
+  </div>
+
+ 
+  <div class="dose-popup-backdrop" id="dosePopup" aria-hidden="true">
+    <div class="dose-popup" role="dialog" aria-modal="true" aria-labelledby="dosePopupTitle">
+      <div class="dose-popup-icon" id="dosePopupIcon"></div>
+      <span class="eyebrow">ВРЕМЯ ПРИЁМА</span>
+      <h2 id="dosePopupTitle">Пора принять лекарство</h2>
+      <p class="dose-popup-name" id="dosePopupName"></p>
+      <p class="dose-popup-dose" id="dosePopupDose"></p>
+      <p class="dose-popup-time" id="dosePopupTime"></p>
+      <div class="dose-popup-actions">
+        <button type="button" class="secondary-button" id="dosePopupSkip">Пропустить</button>
+        <button type="button" class="primary-button" id="dosePopupTake">✓ Принято</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+
+  <script src="auth.js"></script>
+  <script src="medicines.js"></script>
+  <script src="schedule.js"></script>
+  <script src="history.js"></script>
+  <script src="statistics.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
